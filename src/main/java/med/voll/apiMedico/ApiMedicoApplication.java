@@ -8,6 +8,7 @@ public class ApiMedicoApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ApiMedicoApplication.class, args);
+		System.out.println("deu certo graças a deus");
 	}
 
 }
