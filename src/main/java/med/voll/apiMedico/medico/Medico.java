@@ -28,7 +28,7 @@ import med.voll.apiMedico.endereco.Endereco;
 public class Medico {
 
 	@Id 
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="ID_MEDICO")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "medico")
 	@SequenceGenerator(name="medico", sequenceName="S_ID_MEDICO",allocationSize = 1,initialValue = 1)
@@ -50,10 +50,24 @@ public class Medico {
 		this.email = dados.email();
 		this.telefone = dados.telefone();
 		this.especialidade = dados.especialidade();
-		this.endereco = new Endereco(dados.endereco());
+		this.endereco = new Endereco(dados.endereco()) ;
 	}
 
-	public void atualizarInformacoes(DadosAtualizacaoMedico dados) {
+//	public void atualizarInformacoes(DadosAtualizacaoMedico dados) {
+//		if(dados.nome() != null) {
+//			this.nome = dados.nome();
+//		}
+//		
+//		if(dados.telefone() != null) {
+//			this.telefone = dados.telefone();
+//		}
+//		
+//		if(dados.endereco() != null) {
+//			this.endereco.atualizarInformacoes(dados.endereco());
+//		}
+//	}
+	
+	public DadosAtualizacaoMedico  atualizarInformacoes(DadosAtualizacaoMedico dados) {
 		if(dados.nome() != null) {
 			this.nome = dados.nome();
 		}
@@ -65,5 +79,7 @@ public class Medico {
 		if(dados.endereco() != null) {
 			this.endereco.atualizarInformacoes(dados.endereco());
 		}
+		
+		return dados;
 	}
 }

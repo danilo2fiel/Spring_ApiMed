@@ -9,7 +9,7 @@ public record DadosListagemMedico(
 		Especialidade especialidade,
 		String bairro) 
 {
-	public DadosListagemMedico(Medico medico) {
+	public DadosListagemMedico(Medico medico ) {
 		this(medico.getId(),
 				medico.getNome(),
 				medico.getEmail(), 

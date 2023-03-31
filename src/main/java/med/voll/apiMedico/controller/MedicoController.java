@@ -1,9 +1,12 @@
 package med.voll.apiMedico.controller;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,37 +31,32 @@ import med.voll.apiMedico.medico.MedicoRepository;
 public class MedicoController {
 
 	@Autowired
-	private MedicoRepository repository;
+	MedicoRepository repository ;	
 	
 	@PostMapping
 	@Transactional
-	public void cadastrar (@RequestBody @Valid DadosCadastroMedico dados) {
-		repository.save(new Medico(dados));
+	public ResponseEntity<Medico> cadastroMedico (@RequestBody @Valid DadosCadastroMedico dados) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(new Medico (dados))) ;
 	}
-	
-	/* fazer o getMapping diretamente da entidade 
-	 *  @GetMapping
-    	public List<Medico> listar() {
-        	return repository.findAll();
-	 */
 	
 	@GetMapping
-	public Page<DadosListagemMedico> listar(@PageableDefault(size=10,sort= {"nome"})Pageable paginacao){
-		return repository.findAll(paginacao).map(DadosListagemMedico::new);
+	public ResponseEntity<Page<DadosListagemMedico>> listarMedico (@PageableDefault(size=10,sort= {"nome"})Pageable paginacao){
+		return ResponseEntity.status(HttpStatus.OK).body(repository.findAll(paginacao).map(DadosListagemMedico::new));
 	}
-	
+			
 	@PutMapping
 	@Transactional
-	public void atualizar (@RequestBody @Valid DadosAtualizacaoMedico dados) {
+	public ResponseEntity<DadosAtualizacaoMedico> atualisarMedico (@RequestBody DadosAtualizacaoMedico dados) {
 		var medico = repository.getReferenceById(dados.id());
 		medico.atualizarInformacoes(dados);
+		return ResponseEntity.status(HttpStatus.OK).body(dados);
 	}
 	
 	@DeleteMapping("/{id}")
 	@Transactional
-	public void excluir (@PathVariable Long id) {
+	public ResponseEntity<String> deletarMedico (@PathVariable Long id) {
 		repository.deleteById(id);
+		return ResponseEntity.status(HttpStatus.OK).body("deletado com sucesso");
 	}
-	
 	
 }
