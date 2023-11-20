@@ -1,15 +1,16 @@
-package med.voll.apiMedico.paciente;
+package med.voll.apiMedico.domain.paciente;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import med.voll.apiMedico.endereco.DadosEndereco;
+import med.voll.apiMedico.domain.endereco.DadosEndereco;
 
 public record DadosCadastroPaciente(
 
 	@NotBlank	
 	String nome,
-	@NotBlank @Email
+	@NotBlank 
+	@Email
 	String email,
 	@NotBlank 
 	String telefone,

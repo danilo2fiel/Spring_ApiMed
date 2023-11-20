@@ -1,6 +1,8 @@
 package med.voll.apiMedico.controller;
 
 
+import java.net.URI;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,46 +19,64 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.validation.Valid;
-import med.voll.apiMedico.medico.DadosAtualizacaoMedico;
-import med.voll.apiMedico.medico.DadosCadastroMedico;
-import med.voll.apiMedico.medico.DadosListagemMedico;
-import med.voll.apiMedico.medico.Medico;
-import med.voll.apiMedico.medico.MedicoRepository;
+import med.voll.apiMedico.domain.medico.DadosAtualizacaoMedico;
+import med.voll.apiMedico.domain.medico.DadosCadastroMedico;
+import med.voll.apiMedico.domain.medico.DadosDetalhamentoMedico;
+import med.voll.apiMedico.domain.medico.DadosListagemMedico;
+import med.voll.apiMedico.domain.medico.Medico;
+import med.voll.apiMedico.domain.medico.MedicoRepository;
+import med.voll.apiMedico.service.MedicoService;
 
 @RestController
 @CrossOrigin("*")
 @RequestMapping("medicos")
 public class MedicoController {
 
+	private final MedicoService service;
+
 	@Autowired
-	MedicoRepository repository ;	
+	public MedicoController(MedicoService service) {
+		this.service = service;
+	}
 	
 	@PostMapping
 	@Transactional
-	public ResponseEntity<Medico> cadastroMedico (@RequestBody @Valid DadosCadastroMedico dados) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(new Medico (dados))) ;
+	public ResponseEntity<DadosDetalhamentoMedico> cadastroMedico(@RequestBody @Valid DadosCadastroMedico dados,
+			UriComponentsBuilder uriBuilder) {
+		Medico medico = service.cadastroMedico(dados);
+		URI uri = uriBuilder.path("/medicos/{id}").buildAndExpand(medico.getId()).toUri();
+		return ResponseEntity.created(uri).body(new DadosDetalhamentoMedico(medico));
 	}
-	
+		
 	@GetMapping
-	public ResponseEntity<Page<DadosListagemMedico>> listarMedico (@PageableDefault(size=10,sort= {"nome"})Pageable paginacao){
-		return ResponseEntity.status(HttpStatus.OK).body(repository.findAll(paginacao).map(DadosListagemMedico::new));
+	public ResponseEntity<Page<DadosListagemMedico>> listarMedico(
+			@PageableDefault(size = 10, sort = { "nome" }) Pageable paginacao) {
+		Page<DadosListagemMedico> medicosPage = service.listarMedicosComPaginacao(paginacao);
+		return ResponseEntity.ok(medicosPage);
 	}
 			
-	@PutMapping
+	@PutMapping("/{id}")
 	@Transactional
-	public ResponseEntity<DadosAtualizacaoMedico> atualisarMedico (@RequestBody DadosAtualizacaoMedico dados) {
-		var medico = repository.getReferenceById(dados.id());
-		medico.atualizarInformacoes(dados);
-		return ResponseEntity.status(HttpStatus.OK).body(dados);
+	public ResponseEntity<DadosDetalhamentoMedico> atualisarMedico(@PathVariable Long id,
+			@RequestBody DadosAtualizacaoMedico dados) {
+		DadosDetalhamentoMedico dadosDetalhamentoMedico = service.atualizarMedico(id, dados);
+		return ResponseEntity.ok(dadosDetalhamentoMedico);
 	}
 	
 	@DeleteMapping("/{id}")
 	@Transactional
-	public ResponseEntity<String> deletarMedico (@PathVariable Long id) {
-		repository.deleteById(id);
-		return ResponseEntity.status(HttpStatus.OK).body("deletado com sucesso");
+	public ResponseEntity<Void> deletarMedico (@PathVariable Long id) {
+		service.deletarMedico(id);  
+		return ResponseEntity.noContent().build();
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<DadosDetalhamentoMedico> detalharMedico (@PathVariable Long id) {
+		DadosDetalhamentoMedico medico = service.listaUmMedico(id);
+		return ResponseEntity.ok(medico);
 	}
 	
 }

@@ -1,20 +1,20 @@
-package med.voll.apiMedico.medico;
+package med.voll.apiMedico.domain.medico;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import med.voll.apiMedico.endereco.DadosEndereco;
+import med.voll.apiMedico.domain.endereco.DadosEndereco;
 
 public record DadosCadastroMedico(
 		@NotBlank
 		String nome, 
-		@NotBlank
+		@NotBlank 
 		@Email
 		String email, 
 		@NotBlank
-		@Pattern(regexp = "\\d{4,6}")
+		@Pattern(regexp = "\\d{4,6}", message = "O campo deve ter entre 4 e 6 numeros")
 		String crm, 
 		@NotBlank
 		String telefone,
