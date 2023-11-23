@@ -20,5 +20,5 @@ public record DadosDetalhamentoPaciente(
 				paciente.getEndereco()
 		);
 	}
-
+	
 }

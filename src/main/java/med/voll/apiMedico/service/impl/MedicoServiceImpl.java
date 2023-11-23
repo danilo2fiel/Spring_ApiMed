@@ -21,7 +21,7 @@ public class MedicoServiceImpl implements MedicoService {
 	
 	@Override
 	public Medico cadastroMedico(DadosCadastroMedico dados) {
-		var medico = new Medico(dados);
+		Medico medico = new Medico(dados);
 		return repository.save(medico);
 	}
 
